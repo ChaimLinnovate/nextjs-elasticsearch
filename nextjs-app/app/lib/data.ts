@@ -1,51 +1,49 @@
-import { connectToElasticsearch } from "./elasticsearch";
+import { connectToElasticsearch } from './elasticsearch';
 
+interface Message {
+  timestamp: string;
+  text: string;
+  message_id: string;
+  type?: 'invoices' | 'customers' | 'pending' | 'collected';
+}
 
-export async function fetchMessageData(query?: string) {
+async function performSearch(query?: string) {
+    const client = await connectToElasticsearch();
 
-    const client = await connectToElasticsearch()
-
-    if (!client) {
-        throw new Error('Failed to connect to Elasticsearch.');
-    }
-
-const selcte = query ? { text: query } : {};
-
-
-    const { body } = await client.search({
+    const searchBody = {
         index: 'messages',
         body: {
-            query: {
-               
-                match: {
-                    text: query,
-                },
-    
-            },
-            sort: [
-                { timestamp: { order: 'desc' } }
-            ],
+            query: query
+                ? { match: { text: query } }
+                : { match_all: {} },
+            sort: [{ timestamp: { order: 'desc' } }],
             highlight: {
                 fields: {
                     text: {},
                 },
             },
-            size: 10
+            size: 50,
         }
-    })
+    };
 
-    console.log("🚀 ~ file: data.ts:fetchMessageData ~ body ", body);
+    const { body } = await client.search(searchBody);
 
+    const hits = body?.hits?.hits ?? [];
+    return hits.map((hit: any) => hit._source as Message);
+}
 
-    const hits = body?.hits?.hits;
-    if (!hits || hits.length === 0) {
+export async function fetchMessageData(query?: string): Promise<Message[]> {
+    try {
+        const messages = await performSearch(query);
+
+        if (messages.length === 0) {
+            return [];
+        }
+
+        console.log("Fetched Messages:", messages); // Debugging line can be conditional
+        return messages;
+    } catch (error) {
+        console.error("Error fetching message data:", error);
         return [];
     }
-    const sources = hits.map((hit: any) => hit._source);
-
-
-    console.log("🚀 ~ file: data.ts:fetchMessageData ~ body ", sources)
-
-    return sources;
-
 }

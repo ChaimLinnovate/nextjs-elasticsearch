@@ -18,10 +18,5 @@ COPY . .
 # Build the Next.js application
 RUN npm run build
 
-RUN npm run seed 
-
 # Expose the port Next.js runs on
 EXPOSE 3000
-
-# Start the application
-CMD ["npm", "start"]

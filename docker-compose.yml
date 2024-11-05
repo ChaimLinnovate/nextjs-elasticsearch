@@ -9,16 +9,32 @@ services:
       xpack.security.enabled: 'true'
       ELASTIC_PASSWORD: 'changeme'
       ES_JAVA_OPTS: '-Xmx2g -Xms2g'
+    networks:
+      - default  
+
+
   kibana:
     image: kibana:7.8.1
     volumes:
       - ./kibana.yml:/usr/share/kibana/config/kibana.yml
     ports:
       - 5601:5601
+
+
   app:
     build: ./nextjs-app
-    ports:
-      - 3000:3000
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ESS_CLOUD_PASSWORD=changeme
+      - ESS_CLOUD_USERNAME=elastic
     depends_on:
       - elasticsearch
-      - kibana    
+      - kibana  
+    ports:
+      - "3000:3000"
+    command: npm start 
+
+
+networks:
+  default:
+    driver: bridge

@@ -12,8 +12,7 @@ export async function connectToElasticsearch():  Promise<Client> {
     }
 
     return new Client({
-        node: 'http://localhost:9200',
- 
+        node: process.env.ELASTICSEARCH_URL || 'http://elasticsearch:9200',
         auth: {
             username: ESS_CLOUD_USERNAME,
             password: ESS_CLOUD_PASSWORD,
