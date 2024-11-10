@@ -1,6 +1,8 @@
 'use strict'
 
 const { Client } = require('@elastic/elasticsearch')
+import messageData from './seedData.json';
+
 const client = new Client({
     node: 'http://localhost:9200',
     auth: { username: 'elastic', password: 'changeme' }
@@ -22,33 +24,6 @@ async function run () {
   }, { ignore: [400] })
 
   // Prepare dataset (translated from the original 'messageData')
-  const messageData = [
-    {
-      message_id: 1,
-      text: "שלום, זו הודעה ראשונה",
-      timestamp: "2024-10-01T12:00:00Z"
-    },
-    {
-      message_id: 2,
-      text: "הודעה שנייה עם תוכן מעניין",
-      timestamp: "2024-10-02T14:30:00Z"
-    },
-    {
-      message_id: 3,
-      text: "הודעה שלישית עם מידע נוסף",
-      timestamp: "2024-10-03T09:15:00Z"
-    },
-    {
-      message_id: 4,
-      text: "הודעה רביעית בנושא חשוב",
-      timestamp: "2024-10-04T16:45:00Z"
-    },
-    {
-      message_id: 5,
-      text: "הודעה חמישית עם תוכן מעניין לורם יפסום",
-      timestamp: "2024-10-05T11:20:00Z"
-    }
-  ]
 
   // Prepare the operations for bulk indexing
   const operations = messageData.flatMap(doc => [{ index: { _index: 'messages', _id: doc.message_id } }, doc])

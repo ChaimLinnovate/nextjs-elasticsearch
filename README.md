@@ -12,7 +12,7 @@ This project demonstrates how to set up a **Next.js** application with **Elastic
 
 ### Prerequisites
 1. **Docker** - Ensure Docker is installed on your machine.
-2. **Node.js** - Ensure Node.js (v14 or later) is installed.
+2. **Node.js** - Ensure Node.js (v18 or later) is installed.
 
 ### 1. Clone the Repository
 Clone this repository to your local machine:
